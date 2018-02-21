@@ -38,17 +38,22 @@ public class WebController {
     @RequestMapping("/trigger")
     @ResponseBody
     public void startWork() {
+        //创建三个样例任务，把它们交给异步方法运行
         for (int i = 0; i < 3; i++) {
             System.out.println(this + "START startWork");
 
             ExampleJob newJob = new ExampleJob("Job-" + jobNumber, template);
             jobNumber = jobNumber + 1;
             myJobList.add(newJob);
+            //这里的异步方法没有返回值
             myService.doWork(newJob);
             System.out.println(this + "END startWork");
         }
     }
 
+    /**
+     * 本方法提供给浏览器的定时任务调用，返回样例作业的列表
+     * **/
     @RequestMapping(value = "/status")
     @ResponseBody
     @SubscribeMapping("initial")
@@ -58,8 +63,8 @@ public class WebController {
 
     @RequestMapping(value = "/poolsize/{newSize}")
     @ResponseBody
-    public void setNewPoolsize(@PathVariable("newSize") int id) {
-        myExecutor.setCorePoolSize(id);
+    public void setNewPoolsize(@PathVariable("newSize") int newSize) {
+        myExecutor.setCorePoolSize(newSize);
     }
 
 
